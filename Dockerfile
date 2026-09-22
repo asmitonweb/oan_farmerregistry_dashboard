@@ -41,6 +41,8 @@ COPY ./ ./
 # Baked into the client bundle, so the Back button knows where the portal is.
 ARG NEXT_PUBLIC_PORTAL_URL=http://portal.localtest.me:3000
 ENV NEXT_PUBLIC_PORTAL_URL=${NEXT_PUBLIC_PORTAL_URL}
+ARG NEXT_PUBLIC_API_URL=http://localhost:8001/api/v1/farmer-registry
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build

@@ -7,25 +7,11 @@ services:
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_PORTAL_URL: ${NEXT_PUBLIC_PORTAL_URL:-http://localhost:3001}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8001/api/v1/farmer-registry}
     image: farmer-registry-dashboard:latest
     container_name: farmer-registry-dashboard-ui
     ports:
       - "${PORT:-3002}:3000"
     environment:
-      # Connection to the primary Farmer Registry database (farmers, lands, households, etc.)
-      - DB_HOST=${DB_HOST:-postgres}
-      - DB_PORT=${DB_PORT:-5432}
-      - DB_USER=${DB_USER:-postgres}
-      - DB_PASSWORD=${DB_PASSWORD:-postgres}
-      - DB_NAME=${DB_NAME:-farmer_registry_db}
-
-      # Connection to the Master Data database (geo levels, catalogue)
-      - MD_DB_HOST=${MD_DB_HOST:-postgres}
-      - MD_DB_PORT=${MD_DB_PORT:-5432}
-      - MD_DB_USER=${MD_DB_USER:-postgres}
-      - MD_DB_PASSWORD=${MD_DB_PASSWORD:-postgres}
-      - MD_DB_NAME=${MD_DB_NAME:-farmer_master_data_db}
-
       - NODE_ENV=production
     restart: unless-stopped
-    # If connecting to a local database running on the host machine, you may need to use host networking or host.docker.internal depending on your OS.

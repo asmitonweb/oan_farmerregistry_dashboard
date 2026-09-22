@@ -71,6 +71,7 @@ export function GlobalFiltersSidebar({ filters, onFiltersChange }: GlobalFilters
   const [isWoredasLoading, setIsWoredasLoading] = useState(false)
   const [isKebelesLoading, setIsKebelesLoading] = useState(false)
 
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001/api/v1/farmer-registry'
   const fetchJson = async (url: string) => {
     const res = await fetch(url)
     if (!res.ok) throw new Error(`Request failed: ${url}`)
@@ -86,7 +87,7 @@ export function GlobalFiltersSidebar({ filters, onFiltersChange }: GlobalFilters
     const loadFilterOptions = async () => {
       try {
         setIsLoading(true)
-        const options = await fetchJson("/api/filter-options")
+        const options = await fetchJson(`${apiUrl}/analytics/filter-options`)
 
         setRegions((options?.regions || []).filter((r: GeoOption) => r?.code && r?.name))
         setRecordStates((options?.recordStatuses || []).filter((s: CountedOption) => s?.code))
@@ -114,7 +115,7 @@ export function GlobalFiltersSidebar({ filters, onFiltersChange }: GlobalFilters
 
       try {
         setIsZonesLoading(true)
-        const response = await fetchJson(`/api/locations?regionId=${encodeURIComponent(filters.region)}`)
+        const response = await fetchJson(`${apiUrl}/analytics/locations?regionId=${encodeURIComponent(filters.region)}`)
         setZones((response?.zones || []).filter((z: GeoOption) => z?.code && z?.name))
       } catch (error) {
         console.error("Failed to load zones:", error)
@@ -136,7 +137,7 @@ export function GlobalFiltersSidebar({ filters, onFiltersChange }: GlobalFilters
 
       try {
         setIsWoredasLoading(true)
-        const response = await fetchJson(`/api/locations?zoneId=${encodeURIComponent(filters.zone)}`)
+        const response = await fetchJson(`${apiUrl}/analytics/locations?zoneId=${encodeURIComponent(filters.zone)}`)
         setWoredas((response?.woredas || []).filter((w: GeoOption) => w?.code && w?.name))
       } catch (error) {
         console.error("Failed to load woredas:", error)
@@ -158,7 +159,7 @@ export function GlobalFiltersSidebar({ filters, onFiltersChange }: GlobalFilters
 
       try {
         setIsKebelesLoading(true)
-        const response = await fetchJson(`/api/locations?woredaId=${encodeURIComponent(filters.woreda)}`)
+        const response = await fetchJson(`${apiUrl}/analytics/locations?woredaId=${encodeURIComponent(filters.woreda)}`)
         setKebeles((response?.kebeles || []).filter((k: GeoOption) => k?.code && k?.name))
       } catch (error) {
         console.error("Failed to load kebeles:", error)

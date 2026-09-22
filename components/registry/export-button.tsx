@@ -162,7 +162,7 @@ export function ExportDataButton({
       return
     }
 
-    const response = await fetch("/api/data/export", {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8001/api/v1/farmer-registry"}/analytics/data/export`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ filters, format: "csv", filename }),

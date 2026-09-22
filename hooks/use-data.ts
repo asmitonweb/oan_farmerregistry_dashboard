@@ -70,7 +70,8 @@ export function useChartGroupData(
           if (value) params.append(key, value as string)
         })
 
-        const response = await fetch(`/api/charts?${params.toString()}`)
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001/api/v1/farmer-registry'
+        const response = await fetch(`${apiUrl}/analytics/charts?${params.toString()}`)
         if (!response.ok) {
           throw new Error(`HTTP error ${response.status}`)
         }
