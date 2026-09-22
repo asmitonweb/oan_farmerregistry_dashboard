@@ -1,10 +1,10 @@
 # Farmer Registry Dashboard UI
 
-A standalone, production-ready analytics dashboard for the Farmer Registry. Built with Next.js, this application directly queries the registry and master data databases to render insights into coverage, demographics, land tenure, and registration trends, filtered by geography, farming type, and record state.
+A standalone, production-ready analytics dashboard for the Farmer Registry. Built with Next.js, this application connects to the OpenG2P Farmer Registry backend microservice to render insights into coverage, demographics, land tenure, and registration trends, filtered by geography, farming type, and record state.
 
 ## Features
 
-- **Direct Database Integration:** Connects directly to PostgreSQL databases (both the primary registry and master data) using read-only SQL queries.
+- **Microservice Architecture:** Acts as a pure frontend UI that fetches data securely from the `farmer-extension` API endpoint, requiring no direct database credentials.
 - **Topological Maps:** Renders geographical boundaries dynamically based on region, zone, or woreda. Maps are aggressively cached to ensure high concurrency without blocking the server.
 - **CSV Data Exports:** Built-in endpoints allow exporting the raw data behind any chart as standard CSV.
 
@@ -12,31 +12,19 @@ A standalone, production-ready analytics dashboard for the Farmer Registry. Buil
 
 - Node.js 24+ (for local development)
 - Docker and Docker Compose (for production deployments)
-- PostgreSQL instances containing the `farmer_registry_db` and `farmer_master_data_db` schemas.
+- An active instance of the OpenG2P Farmer Registry API (Staff Portal API) to serve the analytics endpoints.
 
 ## Environment Variables
-
-The dashboard requires connection strings to both the main registry database and the master data database.
 
 Copy the `.env.example` file to `.env.local` for development, or set these in your deployment environment:
 
 ```env
-# Primary Registry Database (farmers, lands, households, approvals)
-DB_HOST=postgres
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=postgres
-DB_NAME=farmer_registry_db
-
-# Master Data Database (geo catalogues, region hierarchies)
-MD_DB_HOST=postgres
-MD_DB_PORT=5432
-MD_DB_USER=postgres
-MD_DB_PASSWORD=postgres
-MD_DB_NAME=farmer_master_data_db
-
 # URL to return to when clicking "Back" in the dashboard header
-NEXT_PUBLIC_PORTAL_URL=http://localhost:3001
+NEXT_PUBLIC_PORTAL_URL=http://portal.localtest.me:3000
+
+# URL pointing to the external OpenG2P Farmer Registry backend that exposes the
+# dashboard analytics endpoints (e.g. /analytics/charts, /analytics/locations)
+NEXT_PUBLIC_API_URL=http://localhost:8001/api/v1/farmer-registry
 ```
 
 ## Running Locally for Development
@@ -75,6 +63,5 @@ To adapt the map for a different country:
 
 ## Architecture Notes
 
-- **Read-Only Access:** The dashboard only performs `SELECT` queries. It relies on the Staff/Partner APIs to perform writes.
-- **SQL Execution:** Queries are assembled in `lib/chart-queries.ts` using a Common Table Expression (CTE) called `SCOPE` which resolves filters once.
+- **Decoupled API:** The dashboard no longer connects to PostgreSQL databases directly. All heavy aggregations and data fetching are handled by FastAPI inside the `farmer-extension` Python module.
 - **Standalone Mode:** The dashboard was originally part of a monolithic stack, but operates completely independent of the Staff Portal's Next.js image. The `NEXT_PUBLIC_PORTAL_URL` is baked into the client bundle at build time to provide a seamless "Back" button experience for users entering from the portal.
